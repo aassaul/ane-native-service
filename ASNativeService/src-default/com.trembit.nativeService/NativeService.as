@@ -9,17 +9,12 @@ package com.trembit.nativeService {
 	import flash.events.EventDispatcher;
 	import flash.net.URLRequest;
 
-	[Event(type="com.trembit.nativeService.events.NativeServiceEvent", name="requestFinished")]
-	[Event(type="com.trembit.nativeService.events.NativeServiceEvent", name="requestError")]
-	public class NativeService extends EventDispatcher {
-
+	public class NativeService extends EventDispatcher implements INativeService{
 
 		public function callGet(request:URLRequest):String {
 			return "";
 		}
 
-		public function dispose():void {
-
-		}
+		public function dispose():void {}
 	}
 }

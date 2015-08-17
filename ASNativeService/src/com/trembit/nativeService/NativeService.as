@@ -12,9 +12,7 @@ package com.trembit.nativeService {
 	import flash.external.ExtensionContext;
 	import flash.net.URLRequest;
 
-	[Event(type="com.trembit.nativeService.events.NativeServiceEvent", name="requestFinished")]
-	[Event(type="com.trembit.nativeService.events.NativeServiceEvent", name="requestError")]
-	public class NativeService extends EventDispatcher {
+	public class NativeService extends EventDispatcher implements INativeService{
 
 		private var extContext:ExtensionContext;
 
