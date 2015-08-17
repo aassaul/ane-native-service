@@ -1,0 +1,15 @@
+<extension xmlns="http://ns.adobe.com/air/extension/18.0"> 
+    <id>com.trembit.extension.NativeService</id> 
+    <versionNumber>0.1.1</versionNumber>
+    <platforms> 
+    	<platform name="Android-ARM">
+            <applicationDeployment>
+                <nativeLibrary>libNativeService.jar</nativeLibrary>
+                <initializer>com.trembit.nativeService.api.NativeServiceFREExtension</initializer>
+            </applicationDeployment>
+        </platform>
+        <platform name="default">
+            <applicationDeployment/> 
+        </platform>
+    </platforms> 
+</extension>
