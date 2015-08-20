@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="ane-android" default="android-release">
+
+    <property file="../build.properties"/>
+
+    <target name="android-release" description="Build Android Library with debugging disabled">
+        <android-build debug="false"/>
+    </target>
+    <target name="android-debug" description="Build Android Library with debugging enabled">
+        <android-build debug="true"/>
+    </target>
+	
+    <macrodef name="android-build" description="Build Android Library">
+        <attribute name="debug"/>
+        <attribute name="aapt" default="${android.build.tools.dir}/aapt${exe.ext}"/>
+        <attribute name="source.dir" default="${android.lib.root.dir}/src" />
+        <attribute name="gen.absolute.dir" default="${android.lib.root.dir}/gen" />
+        <attribute name="resource.absolute.dir" default="${android.lib.root.dir}/res" />
+        <attribute name="compile.root.dir" default="${android.lib.root.dir}/temp" />
+        <attribute name="compile.classes.dir" default="@{compile.root.dir}/classes" />
+        <attribute name="internal.out.android.dir" default="${internal.out.dir}/${android.lib.out.dir.name}"/>
+        <sequential>
+            <delete dir="@{compile.root.dir}"/>
+            <mkdir dir="@{compile.classes.dir}"/>
+
+            <echo message="Using Java version ${ant.java.version}."/>
+            <echo message="Generating R.java / Manifest.java from the resources..."/>
+
+            <exec executable="@{aapt}" failonerror="true">
+                <arg value="package" />
+                <arg line="" />
+                <arg value="-m" />
+                <arg value="-J" />
+                <arg path="@{gen.absolute.dir}" />
+                <arg value="-M" />
+                <arg path="${android.lib.root.dir}/AndroidManifest.xml" />
+                <arg value="-S" />
+                <arg path="@{resource.absolute.dir}" />
+                <arg value="-I" />
+                <arg path="${android.sdk}/android.jar" />
+            </exec>
+            <javac source="1.6" target="1.6" destdir="@{compile.classes.dir}" includeantruntime="false" debug="@{debug}">
+                <src path="@{source.dir}"/>
+                <src path="@{gen.absolute.dir}"/>
+                <classpath>
+                    <pathelement location="${android.sdk}/android.jar"/>
+                    <pathelement location="${flash.flex.sdk}/lib/android/FlashRuntimeExtensions.jar"/>
+                </classpath>
+            </javac>
+
+            <mkdir dir="@{internal.out.android.dir}"/>
+
+            <delete>
+                <fileset dir="@{compile.classes.dir}" includes="**/R$*.class"/>
+                <fileset dir="@{compile.classes.dir}" includes="**/R.class"/>
+            </delete>
+
+            <jar basedir="@{compile.classes.dir}" destfile="@{internal.out.android.dir}/lib${name}.jar"/>
+
+            <copy todir="@{internal.out.android.dir}/ane-res">
+                <fileset dir="@{resource.absolute.dir}"/>
+            </copy>
+
+            <delete dir="@{compile.root.dir}"/>
+        </sequential>
+    </macrodef>
+
+</project>

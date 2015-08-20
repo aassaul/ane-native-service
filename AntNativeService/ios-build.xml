@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="ane-ios" default="ios">
+
+    <property file="../build.properties"/>
+
+    <target name="ios" description="Build iOS Library">
+        <mkdir dir="IOS${name}/build/"/>
+
+        <exec executable="xcodebuild" failonerror="true" dir="IOS${name}/">
+            <arg line="-project ${name}.xcodeproj"/>
+            <arg line="-alltargets clean"/>
+        </exec>
+
+        <exec executable="xcodebuild" failonerror="true" dir="IOS${name}/">
+            <arg line="-project ${name}.xcodeproj"/>
+            <arg line="-sdk ${ios.sdk.version}"/>
+            <arg line="-alltargets"/>
+            <arg line="-configuration Release"/>
+			<arg value="ARCHS = armv7 arm64"/>
+            <!--arg value="ONLY_ACTIVE_ARCH=NO"/-->
+			<arg value="VALID_ARCHS = armv7 armv7s arm64"/>
+            <arg line="SYMROOT=temp/ios/build/"/>
+        </exec>
+
+        <copy file="/temp/ios/build/Release-iphoneos/lib${name}.a" todir="temp/ios" overwrite="true"/>
+
+        <delete dir="/temp/ios/build/"/>
+    </target>
+
+</project>

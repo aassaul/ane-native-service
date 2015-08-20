@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="ane-air" default="swc-mobile">
+
+    <property file="../build.properties"/>
+
+    <target name="swc-mobile" description="Build SWC library">
+        <mkdir dir="${flash.lib.root.dir}/temp"/>
+        <mkdir dir="${internal.out.dir}/${flash.lib.out.dir.name}"/>
+
+         <compile-swc additional.path="${flash.lib.src.main}"/>
+
+        <copy file="${flash.lib.root.dir}/temp/library.swf" todir="${internal.out.dir}/ios" overwrite="true"/>
+        <copy file="${flash.lib.root.dir}/temp/library.swf" todir="${internal.out.dir}/ios-simulator" overwrite="true"/>
+        <copy file="${flash.lib.root.dir}/temp/library.swf" todir="${internal.out.dir}/${android.lib.out.dir.name}" overwrite="true"/>
+        <copy file="${flash.lib.root.dir}/temp/${name}.swc" todir="${internal.out.dir}/${flash.lib.out.dir.name}" overwrite="true"/>
+
+        <delete dir="${flash.lib.root.dir}/temp"/>
+    </target>
+
+    <macrodef name="compile-swc">
+        <attribute name="additional.path"/>
+        <sequential>
+            <fileset dir="${flash.lib.root.dir}" casesensitive="yes" id="classfiles">
+                <include name="@{additional.path}/**/*.as"/>
+                <include name="${flash.lib.src.common}/**/*.as"/>
+            </fileset>
+            <pathconvert property="classlist" refid="classfiles" pathsep=" " dirsep=".">
+                <regexpmapper from="(${flash.lib.src.common}|@{additional.path}).(.*)\.as" to="\2"/>
+            </pathconvert>
+
+            <exec executable="${flash.flex.sdk}/bin/compc${bin.ext}" failonerror="true">
+                <env key="AIR_SDK_HOME" value="${flash.air.sdk}"/>
+                <arg line='-source-path+=${flash.lib.root.dir}/${flash.lib.src.common}'/>
+                <arg line='-source-path+=${flash.lib.root.dir}/@{additional.path}'/>
+                <arg line='-output ${flash.lib.root.dir}/temp/${name}.swc'/>
+                <arg line='-target-player=${flash.player.version}'/>
+                <arg line='-swf-version=${flash.swf.version}'/>
+                <arg line='-external-library-path+="${flash.air.sdk}/frameworks/libs/air/airglobal.swc"'/>
+                <arg line='-include-classes ${classlist}'/>
+            </exec>
+
+            <unzip src="${flash.lib.root.dir}/temp/${name}.swc" dest="${flash.lib.root.dir}/temp" overwrite="true"/>
+        </sequential>
+    </macrodef>
+
+    <target name="swc-default" description="Build Default SWC library">
+        <mkdir dir="${internal.out.dir}/${flash.lib.out.dir.name}"/>
+        <mkdir dir="${flash.lib.root.dir}/temp"/>
+
+        <compile-swc additional.path="${flash.lib.src.default}"/>
+
+        <copy file="${flash.lib.root.dir}/temp/library.swf" todir="${internal.out.dir}/${flash.lib.out.dir.default.name}" overwrite="true"/>
+        <delete dir="${flash.lib.root.dir}/temp"/>
+    </target>
+
+</project>
